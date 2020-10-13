@@ -1,132 +1,142 @@
 <template>
   <v-container>
     <v-row class="text-center">
-      <v-col class="mb-2">
-        <h2 class="display-2 font-weight-bold mb-3">
+      <v-col class="">
+        <h2 class="display-2 font-weight-bold ">
           Listado de Estudiantes
         </h2>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <template>
-          <v-row justify="center">
-            <v-dialog v-model="dialog2" persistent max-width="600px">
-              <template
-                v-slot:activator="{ on, attrs }"
-                class="d-flex align-start"
-              >
-                <v-btn
-                  class="mx-2"
-                  fab
-                  dark
-                  color="indigo"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon dark>mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title class="d-flex justify-center">
-                  <span class="align-center">Estudiante Profile</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container>
-                    <form v-on:submit.prevent="guardarEstudiante()">
-                      <v-row>
-                        <v-col cols="12">
-                          <v-text-field
-                            label="Nombre*"
-                            v-model="estudiante.nombre"
-                            hint="Nombre del Estudiante"
-                            persistent-hint
-                            required
-                          ></v-text-field>
-                        </v-col>
-
-                        <v-col cols="12">
-                          <v-select
-                            v-model="estudiante.clases"
-                            :items="clase"
-                            item-text="clase"
-                            item-value="clase"
-                            label="Clase"
-                            required
-                          ></v-select>
-                        </v-col>
-
-                        <v-col cols="12">
-                          <v-menu
-                            ref="menu"
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :return-value.sync="date"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="290px"
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                                v-model="date"
-                                label="Fecha de Nacimiento"
-                                prepend-icon="mdi-calendar"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="estudiante.fechanac"
-                              no-title
-                              scrollable
-                              color="primary"
-                            >
-                              <v-spacer></v-spacer>
-                              <v-btn text color="primary" @click="menu = false">
-                                Cancel
-                              </v-btn>
-                              <v-btn
-                                text
-                                color="primary"
-                                @click="$refs.menu.save(date)"
-                              >
-                                OK
-                              </v-btn>
-                            </v-date-picker>
-                          </v-menu>
-                        </v-col>
-                        <v-spacer></v-spacer>
-                        <v-col cols="  12" sm="6" md="4"> </v-col>
-                      </v-row>
-                    </form>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="dialog2 = false">
-                    Close
-                  </v-btn>
+    <v-form v-model="valid">
+      <v-row>
+        <v-col>
+          <template>
+            <v-row justify="center">
+              <v-dialog v-model="dialog2" persistent max-width="600px">
+                <template v-slot:activator="{ on, attrs }" class="">
                   <v-btn
-                    type="submit"
-                    color="blue darken-1"
-                    outlined
-                    text
-                    @click="(dialog2 = false), guardarEstudiante()"
+                    class=""
+                    fab
+                    dark
+                    color="indigo"
+                    v-bind="attrs"
+                    v-on="on"
                   >
-                    Save
+                    <v-icon dark>mdi-plus</v-icon>
                   </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-row>
-        </template>
-      </v-col>
-    </v-row>
+                </template>
+                <v-card>
+                  <v-card-title class="d-flex justify-center">
+                    <span class="align-center">Estudiante Profile</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <form v-on:submit.prevent="guardarEstudiante()">
+                        <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                              label="Nombre*"
+                              v-model="estudiante.nombre"
+                              :rules="nameRules"
+                              :counter="20"
+                              hint="Nombre del Estudiante"
+                              persistent-hint
+                              required
+                            ></v-text-field>
+                          </v-col>
 
+                          <v-col cols="12">
+                            <v-select
+                              v-model="estudiante.clases"
+                              :items="clase"
+                              :rules="[(v) => !!v || 'Item is required']"
+                              item-text="clase"
+                              item-value="clase"
+                              label="Clase"
+                              required
+                            ></v-select>
+                          </v-col>
+
+                          <v-col cols="12">
+                            <v-menu
+                              ref="menu"
+                              v-model="menu"
+                              :close-on-content-click="false"
+                              :return-value.sync="date"
+                              transition="scale-transition"
+                              offset-y
+                              min-width="290px"
+                            >
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                  v-model="date"
+                                  label="Fecha de Nacimiento"
+                                  prepend-icon="mdi-calendar"
+                                  readonly
+                                  v-bind="attrs"
+                                  v-on="on"
+                                ></v-text-field>
+                              </template>
+                              <v-date-picker
+                                v-model="estudiante.fechanac"
+                                no-title
+                                scrollable
+                                color="primary"
+                              >
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  text
+                                  color="primary"
+                                  @click="menu = false"
+                                >
+                                  Cancel
+                                </v-btn>
+                                <v-btn
+                                  text
+                                  color="primary"
+                                  @click="$refs.menu.save(date)"
+                                >
+                                  OK
+                                </v-btn>
+                              </v-date-picker>
+                            </v-menu>
+                          </v-col>
+                          <v-spacer></v-spacer>
+                          <v-col cols="  12" sm="6" md="4"> </v-col>
+                        </v-row>
+                      </form>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="(dialog2 = false), limpiarEstudiante()"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn
+                      :disabled="!valid"
+                      type="submit"
+                      color="blue darken-1"
+                      outlined
+                      text
+                      @click="(dialog2 = false), validate, guardarEstudiante()"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-row>
+          </template>
+        </v-col>
+      </v-row>
+    </v-form>
     <v-row class="text-center">
       <v-col cols="12">
-        <v-simple-table fixed-header class="elevation-3">
+        <v-simple-table fixed-header class="elevation-6">
           <template v-slot:default>
             <thead>
               <tr>
@@ -206,8 +216,8 @@
 
                         <v-col cols="12">
                           <v-menu
-                            ref="menu"
-                            v-model="menu"
+                            ref="menu2"
+                            v-model="menu2"
                             :close-on-content-click="false"
                             :return-value.sync="date"
                             transition="scale-transition"
@@ -231,13 +241,17 @@
                               color="primary"
                             >
                               <v-spacer></v-spacer>
-                              <v-btn text color="primary" @click="menu = false">
+                              <v-btn
+                                text
+                                color="primary"
+                                @click="menu2 = false"
+                              >
                                 Cancel
                               </v-btn>
                               <v-btn
                                 text
                                 color="primary"
-                                @click="$refs.menu.save(date)"
+                                @click="$refs.menu2.save(date)"
                               >
                                 OK
                               </v-btn>
@@ -323,8 +337,16 @@ export default {
 
   data() {
     return {
+      valid: false,
+      firstname: "",
+      lastname: "",
+      nameRules: [
+        (v) => !!v || "Name is required",
+        (v) => v.length <= 10 || "Name must be less than 10 characters",
+      ],
       date: new Date().toISOString().substr(0, 10),
       menu: false,
+      menu2: false,
       modal: false,
       menu2: false,
       dialog: false,
@@ -361,6 +383,9 @@ export default {
     this.obtenerClase();
   },
   methods: {
+    validate() {
+      this.$refs.form.validate();
+    },
     limpiarEstudiante() {
       this.estudiante = {};
     },
